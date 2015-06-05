@@ -1,0 +1,23 @@
+{
+  "name": "counselor",
+  "version": "0.0.1",
+  "description": "decorate your express requests with data",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "express",
+    "data"
+  ],
+  "author": "Shawn Allen",
+  "license": "CC0",
+  "dependencies": {
+    "async": "^1.2.0",
+    "extend": "^2.0.1",
+    "tito": "^0.4.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.5"
+  }
+}
