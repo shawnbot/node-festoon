@@ -161,18 +161,18 @@ describe('Counselor()', function() {
 
   });
 
-  describe('getLoader()', function() {
+  describe('decorate()', function() {
 
     beforeEach(createWithFixtures);
     afterEach(removeCounselor);
 
     it('returns an Express-compatible function: `load(req, res, next)`', function() {
-      var load = this.counselor.getLoader('foo');
+      var load = this.counselor.decorate('foo');
       assert.equal(load.length, 3);
     });
 
     it('loads data from a request', function(done) {
-      var load = this.counselor.getLoader('foo');
+      var load = this.counselor.decorate('foo');
       var req = {};
       var res = {};
       load(req, res, function(error) {

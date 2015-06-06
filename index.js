@@ -50,7 +50,7 @@ Counselor.prototype = {
     return this;
   },
 
-  getLoader: function(sources) {
+  decorate: function(sources) {
     var self = this;
     return function loader(req, res, next) {
       if (!res.data) res.data = {};
