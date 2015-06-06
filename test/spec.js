@@ -151,6 +151,14 @@ describe('Counselor()', function() {
       });
     });
 
+    it('throws errors for missing interpolated data sources', function(done) {
+      this.counselor.setSource('x', ':x.csv');
+      this.counselor.load('x', {x: 'baz'}, function(error, data) {
+        assert.ok(error);
+        done();
+      });
+    });
+
   });
 
   describe('getLoader()', function() {
