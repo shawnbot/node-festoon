@@ -6,7 +6,7 @@ your web apps a piece of cake. Here's a taste:
 ```js
 var Festoon = require('festoon');
 
-var festoon = new Festoon({
+var data = new Festoon({
   sources: {
     people: 'people.csv'
   }
@@ -22,7 +22,7 @@ data:
 var express = require('express');
 var app = express();
 
-app.use('/', festoon.decorate('people'), function(req, res) {
+app.use('/', data.decorate('people'), function(req, res) {
   return res.render('index.html');
 });
 
@@ -36,7 +36,7 @@ When express [renders]() `index.html`, the underlying template engine will get
 an array of parsed rows from `people.csv` in the `people` key of its
 [res.locals](http://expressjs.com/4x/api.html#res.locals) object.
 
-So `festoon.decorate()` takes one or more data source names (which can be
+So `data.decorate()` takes one or more data source names (which can be
 specified in a number of ways), and will populate the response locals with the
 corresponding data, loaded fresh at runtime. **You describe your data sources
 declaratively, and Festoon will load them as needed.**
@@ -47,18 +47,17 @@ directory structure like:
 
 ```
 people/
-|
-+-- betty.json
-+-- bobby.json
-+-- etc.
+  betty.json
+  bobby.json
+  ...
 ```
 
 Then we can do this:
 
 ```js
-festoon.setSource('person', 'people/:person.json');
+data.setSource('person', 'people/:person.json');
 
-app.use('/people/:person', festoon.decorate('person'), function(req, res) {
+app.use('/people/:person', data.decorate('person'), function(req, res) {
   return res.render('person.html');
 });
 ```
@@ -67,7 +66,7 @@ Behind the scenes, Festoon interpolates the `person` parameter of the request
 *into* each of the requested data source filenames, so:
 
 ```
-'people/:person.json' + {person: 'betty'} = 'people/betty.json'
+URL: 'people/betty' -> {person: 'betty'} -> data: 'people/betty.json'
 ```
 
 Festoon will also raise errors when either the interpolation variable (in
