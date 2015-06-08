@@ -18,7 +18,7 @@ named "data source", `people`, which will load data from `people.csv`.
 Next, we'll create an [Express] server and "decorate" the response object with
 that data:
 
-```
+```js
 var express = require('express');
 var app = express();
 
@@ -77,5 +77,8 @@ Behind the scenes, Counselor interpolates the `person` parameter of the request
 ```
 
 Counselor will also raise errors when either the interpolation variable (in
-this case, `person`) isn't available or the interpolated filename doesn't
-exist.
+this case, `person`) isn't available as a request
+[URL](http://expressjs.com/4x/api.html#req.params) or
+[query](http://expressjs.com/4x/api.html#req.query) parameter.
+
+[Express]: http://expressjs.com/
