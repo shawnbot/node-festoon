@@ -1,4 +1,6 @@
 # Festoon
+![travis badge](https://travis-ci.org/shawnbot/node-festoon.svg?branch=master)
+
 Festoon makes it easy to "decorate" [Express]--or other Node-based web
 server--apps with data, and makes integrating small-ish tabular data sets into
 your web apps a piece of cake. Here's a taste:
