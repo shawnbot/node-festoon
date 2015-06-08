@@ -287,8 +287,61 @@ describe('Counselor()', function() {
 
 });
 
-function createWithFixtures() {
-  this.counselor = new Counselor(FIXTURES);
+describe('Express compatibilty', function() {
+
+  var express = require('express');
+  var request = require('request');
+
+  beforeEach(function(done) {
+    createInstance.call(this);
+    createServer.call(this, done);
+  });
+
+  afterEach(function(done) {
+    removeInstance.call(this);
+    removeServer.call(this, done);
+  });
+
+  it('returns an Express-compatible function: `load(req, res, next)`', function() {
+    var load = this.instance.decorate('foo');
+    assert.equal(load.length, 3);
+  });
+
+  it('serves up data', function(done) {
+    this.app.get('/foo', this.instance.decorate('foo'), function(req, res) {
+      assert.ok(res.locals.foo, 'no "foo" data');
+      assert.ok(Array.isArray(res.locals.foo), '"foo" is not an Array');
+      done();
+    });
+    request(this.baseURL + '/foo')
+      .on('end', function(error, res) {
+        console.log('request made');
+      });
+  });
+
+  function createServer(done) {
+    var self = this;
+    var app = express();
+    this.app = app;
+    app.listen(process.env.PORT || 4001, function(error) {
+      if (error) return done(error);
+      var addr = this.address();
+      self.server = this;
+      self.baseURL = ['http://', addr.address, ':', addr.port].join('');
+      done();
+    });
+  }
+
+  function removeServer(done) {
+    var server = this.server;
+    this.server = null;
+    server.close();
+    done();
+  }
+});
+
+function createInstance() {
+  this.instance = new Counselor(FIXTURES);
 }
 
 function removeInstance() {
