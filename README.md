@@ -22,7 +22,7 @@ data:
 var express = require('express');
 var app = express();
 
-app.use('/', data.decorate('people'), function(req, res) {
+app.get('/', data.decorate('people'), function(req, res) {
   return res.render('index.html');
 });
 
@@ -32,8 +32,9 @@ app.listen(1337, function(error) {
 });
 ```
 
-When express [renders]() `index.html`, the underlying template engine will get
-an array of parsed rows from `people.csv` in the `people` key of its
+When express [renders]() `index.html`, the underlying
+[template engine](http://expressjs.com/4x/api.html#app.engine) will get an
+array of parsed rows from `people.csv` in the `people` key of its
 [res.locals](http://expressjs.com/4x/api.html#res.locals) object.
 
 So `data.decorate()` takes one or more data source names (which can be
