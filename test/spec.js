@@ -16,8 +16,8 @@ var FIXTURES = {
 describe('Counselor()', function() {
 
   it('returns a Counselor instance without `new`', function() {
-    var c = Counselor();
-    assert.ok(c instanceof Counselor);
+    var instance = Counselor();
+    assert.ok(instance instanceof Counselor);
   });
 
   it('initializes data sources', function() {
@@ -57,11 +57,11 @@ describe('Counselor()', function() {
 
   describe('load()', function() {
 
-    beforeEach(createWithFixtures);
-    afterEach(removeCounselor);
+    beforeEach(createInstance);
+    afterEach(removeInstance);
 
     it('loads a single source as a string', function(done) {
-      this.counselor.load('foo', function(error, data) {
+      this.instance.load('foo', function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.foo, 'object', 'no "foo" data');
         done();
@@ -75,7 +75,7 @@ describe('Counselor()', function() {
     });
 
     it('loads a single source as an Array', function(done) {
-      this.counselor.load(['foo'], function(error, data) {
+      this.instance.load(['foo'], function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.foo, 'object', 'no "foo" data');
         done();
@@ -83,7 +83,7 @@ describe('Counselor()', function() {
     });
 
     it('loads an aliased data source', function(done) {
-      this.counselor.load({bar: 'foo'}, function(error, data) {
+      this.instance.load({bar: 'foo'}, function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.bar, 'object', 'no "bar" data: ' + Object.keys(data));
         done();
@@ -91,7 +91,7 @@ describe('Counselor()', function() {
     });
 
     it('loads Array data sources', function(done) {
-      this.counselor.load('list', function(error, data) {
+      this.instance.load('list', function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.list, 'object');
         assert.ok(Array.isArray(data.list), 'data is not an Array');
@@ -100,7 +100,7 @@ describe('Counselor()', function() {
     });
 
     it('loads named (map) data sources', function(done) {
-      this.counselor.load('named', function(error, data) {
+      this.instance.load('named', function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.named, 'object');
         assert.ok(Array.isArray(data.named.foo), 'data is not an Array');
@@ -109,8 +109,8 @@ describe('Counselor()', function() {
     });
 
     it('loads data source references', function(done) {
-      this.counselor.setSource('ref', '#foo');
-      this.counselor.load(['ref', 'foo'], function(error, data) {
+      this.instance.setSource('ref', '#foo');
+      this.instance.load(['ref', 'foo'], function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.ref, 'object');
         assert.equal(typeof data.foo, 'object');
@@ -120,8 +120,8 @@ describe('Counselor()', function() {
     });
 
     it('loads interpolated references', function(done) {
-      this.counselor.setSource('ref', '#:bar');
-      this.counselor.load(['ref', 'foo'], {bar: 'foo'}, function(error, data) {
+      this.instance.setSource('ref', '#:bar');
+      this.instance.load(['ref', 'foo'], {bar: 'foo'}, function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.ref, 'object');
         assert.equal(typeof data.foo, 'object');
@@ -131,11 +131,11 @@ describe('Counselor()', function() {
     });
 
     it('loads function data sources', function(done) {
-      this.counselor.setSource('func', function(params, done) {
+      this.instance.setSource('func', function(params, done) {
         return done(null, params);
       });
       var params = {x: 1, y: 2};
-      this.counselor.load('func', params, function(error, data) {
+      this.instance.load('func', params, function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.strictEqual(data.func, params);
         done();
@@ -143,8 +143,8 @@ describe('Counselor()', function() {
     });
 
     it('loads all data sources with "*"', function(done) {
-      this.counselor.setSources({x: 'foo.csv', y: 'bar.csv'});
-      this.counselor.load('*', function(error, data) {
+      this.instance.setSources({x: 'foo.csv', y: 'bar.csv'});
+      this.instance.load('*', function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.ok(data.x, 'no "x" data');
         assert.ok(data.y, 'no "y" data');
@@ -153,8 +153,8 @@ describe('Counselor()', function() {
     });
 
     it('throws errors for missing interpolated data sources', function(done) {
-      this.counselor.setSource('x', ':x.csv');
-      this.counselor.load('x', {x: 'baz'}, function(error, data) {
+      this.instance.setSource('x', ':x.csv');
+      this.instance.load('x', {x: 'baz'}, function(error, data) {
         assert.ok(error);
         done();
       });
@@ -164,16 +164,11 @@ describe('Counselor()', function() {
 
   describe('decorate()', function() {
 
-    beforeEach(createWithFixtures);
-    afterEach(removeCounselor);
-
-    it('returns an Express-compatible function: `load(req, res, next)`', function() {
-      var load = this.counselor.decorate('foo');
-      assert.equal(load.length, 3);
-    });
+    beforeEach(createInstance);
+    afterEach(removeInstance);
 
     it('loads data from a request', function(done) {
-      var load = this.counselor.decorate('foo');
+      var load = this.instance.decorate('foo');
       var req = {};
       var res = {};
       load(req, res, function(error) {
@@ -184,8 +179,8 @@ describe('Counselor()', function() {
     });
 
     it('interpolates data sources', function(done) {
-      this.counselor.setSource('bar', ':bar.csv');
-      this.counselor.load('bar', {bar: 'foo'}, function(error, data) {
+      this.instance.setSource('bar', ':bar.csv');
+      this.instance.load('bar', {bar: 'foo'}, function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.bar, 'object');
         done();
@@ -193,9 +188,9 @@ describe('Counselor()', function() {
     });
 
     it('throws errors for missing interpolation placeholders', function() {
-      this.counselor.setSource('bar', ':bar.csv');
+      this.instance.setSource('bar', ':bar.csv');
       assert.throws(function() {
-        this.counselor.load('bar', {baz: 'foo'}, function() { });
+        this.instance.load('bar', {baz: 'foo'}, function() { });
       }.bind(this));
     });
 
@@ -203,15 +198,15 @@ describe('Counselor()', function() {
 
   describe('Counselor.transform()', function() {
 
-    beforeEach(createWithFixtures);
-    afterEach(removeCounselor);
+    beforeEach(createInstance);
+    afterEach(removeInstance);
 
     it('transforms data', function(done) {
-      this.counselor.setSource('length', Counselor.transform('foo', function(data) {
+      this.instance.setSource('length', Counselor.transform('foo', function(data) {
         return data.length;
       }));
 
-      this.counselor.load('length', function(error, data) {
+      this.instance.load('length', function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.strictEqual(data.length, 2);
         done();
@@ -222,14 +217,14 @@ describe('Counselor()', function() {
 
   describe('Counselor.transform.filter()', function() {
 
-    beforeEach(createWithFixtures);
-    afterEach(removeCounselor);
+    beforeEach(createInstance);
+    afterEach(removeInstance);
 
     it('filters arrays', function(done) {
-      this.counselor.setSource('filter', Counselor.transform.filter('foo', function(d) {
+      this.instance.setSource('filter', Counselor.transform.filter('foo', function(d) {
         return d.a == 1;
       }));
-      this.counselor.load('filter', function(error, data) {
+      this.instance.load('filter', function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.ok(Array.isArray(data.filter), 'data.filter is not an Array');
         assert.equal(data.filter.length, 1, 'filtered data length != 1');
@@ -238,10 +233,10 @@ describe('Counselor()', function() {
     });
 
     it('filters arrays by parameter value', function(done) {
-      this.counselor.setSource('filter', Counselor.transform.filter('foo', function(d) {
+      this.instance.setSource('filter', Counselor.transform.filter('foo', function(d) {
         return d.a == this.a;
       }));
-      this.counselor.load('filter', {a: 1}, function(error, data) {
+      this.instance.load('filter', {a: 1}, function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.ok(Array.isArray(data.filter), 'data.filter is not an Array');
         assert.equal(data.filter.length, 1, 'filtered data length != 1');
@@ -250,10 +245,10 @@ describe('Counselor()', function() {
     });
 
     it('recognizes objects uses `filter.call(params, data)`', function(done) {
-      this.counselor.setSource('filter', Counselor.transform.filter('named', function(data) {
+      this.instance.setSource('filter', Counselor.transform.filter('named', function(data) {
         return data.foo;
       }));
-      this.counselor.load('filter', function(error, data) {
+      this.instance.load('filter', function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.ok(Array.isArray(data.filter), 'data.filter is not an Array');
         assert.equal(data.filter.length, 2, 'filtered data length != 2');
@@ -265,13 +260,13 @@ describe('Counselor()', function() {
 
   describe('Counselor.transform.findByParam()', function() {
 
-    beforeEach(createWithFixtures);
-    afterEach(removeCounselor);
+    beforeEach(createInstance);
+    afterEach(removeInstance);
 
     it('does lookups by key', function(done) {
-      this.counselor.setSource('lookup', Counselor.findByParam('foo', 'a'));
+      this.instance.setSource('lookup', Counselor.findByParam('foo', 'a'));
       var params = {a: 1};
-      this.counselor.load('lookup', params, function(error, data) {
+      this.instance.load('lookup', params, function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.lookup, 'object');
         done();
@@ -279,9 +274,9 @@ describe('Counselor()', function() {
     });
 
     it('does lookups from one key to another', function(done) {
-      this.counselor.setSource('lookup', Counselor.findByParam('foo', 'b', 'a'));
+      this.instance.setSource('lookup', Counselor.findByParam('foo', 'b', 'a'));
       var params = {b: 1};
-      this.counselor.load('lookup', params, function(error, data) {
+      this.instance.load('lookup', params, function(error, data) {
         assert.ok(!error, 'error: ' + error);
         assert.equal(typeof data.lookup, 'object');
         done();
@@ -296,6 +291,6 @@ function createWithFixtures() {
   this.counselor = new Counselor(FIXTURES);
 }
 
-function removeCounselor() {
-  this.counselor = null;
+function removeInstance() {
+  this.instance = null;
 }
