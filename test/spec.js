@@ -311,12 +311,14 @@ describe('Express compatibilty', function() {
     this.app.get('/foo', this.instance.decorate('foo'), function(req, res) {
       assert.ok(res.locals.foo, 'no "foo" data');
       assert.ok(Array.isArray(res.locals.foo), '"foo" is not an Array');
+      res.send('ok');
+    });
+    var url = this.baseURL + '/foo';
+    request(url, function(error, res, body) {
+      assert.ok(!error && res.statusCode === 200, 'bad request: ' + res.statusCode);
+      assert.equal(body, 'ok');
       done();
     });
-    request(this.baseURL + '/foo')
-      .on('end', function(error, res) {
-        console.log('request made');
-      });
   });
 
   function createServer(done) {
@@ -325,9 +327,8 @@ describe('Express compatibilty', function() {
     this.app = app;
     app.listen(process.env.PORT || 4001, function(error) {
       if (error) return done(error);
-      var addr = this.address();
       self.server = this;
-      self.baseURL = ['http://', addr.address, ':', addr.port].join('');
+      self.baseURL = ['http://127.0.0.1:', this.address().port].join('');
       done();
     });
   }
