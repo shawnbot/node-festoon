@@ -4,15 +4,15 @@ var fs = require('fs');
 var joinPath = require('path').join;
 var tito = require('tito');
 
-var Counselor = function(config) {
-  // support calling Counselor() without `new`
-  if (!(this instanceof Counselor)) {
-    return new Counselor(config);
+var Festoon = function(config) {
+  // support calling Festoon() without `new`
+  if (!(this instanceof Festoon)) {
+    return new Festoon(config);
   }
 
   this.config = config || {};
   this.sources = {};
-  this.loaders = extend({}, Counselor.loaders, this.config.loaders);
+  this.loaders = extend({}, Festoon.loaders, this.config.loaders);
 
   this.interpolationPattern = this.config.interpolationPattern || /:(\w+)/g;
 
@@ -21,7 +21,7 @@ var Counselor = function(config) {
   }
 };
 
-Counselor.prototype = {
+Festoon.prototype = {
 
   addSources: function(sources) {
     if (Array.isArray(sources)) {
@@ -170,7 +170,7 @@ Counselor.prototype = {
 
 };
 
-Counselor.getTabularLoader = function(type, options) {
+Festoon.getTabularLoader = function(type, options) {
   return function(filename, done) {
     var parse = tito.formats.createReadStream(type, options);
     var data = [];
@@ -187,7 +187,7 @@ Counselor.getTabularLoader = function(type, options) {
   };
 };
 
-Counselor.loadJSON = function(filename, done) {
+Festoon.loadJSON = function(filename, done) {
   fs.readFile(filename, function(error, buffer) {
     if (error) return done(error);
     try {
@@ -199,22 +199,22 @@ Counselor.loadJSON = function(filename, done) {
   });
 };
 
-Counselor.loadText = function(filename, done) {
+Festoon.loadText = function(filename, done) {
   fs.readFile(filename, function(error, buffer) {
     if (error) return done(error);
     return done(null, buffer.toString());
   });
 };
 
-Counselor.loaders = {
-  json: Counselor.loadJSON,
-  csv: Counselor.getTabularLoader('csv'),
-  tsv: Counselor.getTabularLoader('tsv'),
-  txt: Counselor.loadText,
-  // 'default': Counselor.loadText
+Festoon.loaders = {
+  json: Festoon.loadJSON,
+  csv: Festoon.getTabularLoader('csv'),
+  tsv: Festoon.getTabularLoader('tsv'),
+  txt: Festoon.loadText,
+  // 'default': Festoon.loadText
 };
 
-Counselor.transform = function(source, transform) {
+Festoon.transform = function(source, transform) {
   return function(params, done) {
     this.load(source, params, function(error, data) {
       if (source in data) {
@@ -232,12 +232,12 @@ Counselor.transform = function(source, transform) {
 // creates a lookup function that returns the first value for which
 // the test() function returns truthy in the data source with the
 // given id.
-Counselor.findByParam = function(sourceId, param, key) {
+Festoon.findByParam = function(sourceId, param, key) {
   if (typeof sourceId !== 'string') {
     throw new Error('findByParam() requires a single source id as the first argument');
   }
   if (!key) key = param;
-  return Counselor.transform(sourceId, function(data, params) {
+  return Festoon.transform(sourceId, function(data, params) {
     var id = params[param];
     return data.filter(function(d, i) {
       return d[key] == id;
@@ -245,11 +245,11 @@ Counselor.findByParam = function(sourceId, param, key) {
   });
 };
 
-Counselor.transform.filter = function(sourceId, filter) {
+Festoon.transform.filter = function(sourceId, filter) {
   if (typeof sourceId !== 'string') {
     throw new Error('findByParam() requires a single source id as the first argument');
   }
-  return Counselor.transform(sourceId, function(data, params) {
+  return Festoon.transform(sourceId, function(data, params) {
     return Array.isArray(data)
       ? data.filter(filter, params)
       : filter.call(params, data);
@@ -279,4 +279,4 @@ function getFilenameRelativeTo(filename, path) {
   return [path, filename].join('/');
 }
 
-module.exports = Counselor;
+module.exports = Festoon;

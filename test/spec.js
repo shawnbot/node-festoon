@@ -1,4 +1,4 @@
-var Counselor = require('../');
+var Festoon = require('../');
 var assert = require('assert');
 
 var FIXTURES = {
@@ -13,15 +13,15 @@ var FIXTURES = {
   }
 };
 
-describe('Counselor()', function() {
+describe('Festoon()', function() {
 
-  it('returns a Counselor instance without `new`', function() {
-    var instance = Counselor();
-    assert.ok(instance instanceof Counselor);
+  it('returns a Festoon instance without `new`', function() {
+    var instance = Festoon();
+    assert.ok(instance instanceof Festoon);
   });
 
   it('initializes data sources', function() {
-    var c = new Counselor({
+    var c = new Festoon({
       sources: {
         foo: 'bar.csv'
       }
@@ -31,7 +31,7 @@ describe('Counselor()', function() {
 
   describe('setSource()', function() {
     it('sets a named source', function() {
-      var c = new Counselor(FIXTURES);
+      var c = new Festoon(FIXTURES);
       c.setSource('foo', ':foo.csv');
       assert.equal(c.sources.foo, ':foo.csv');
     });
@@ -40,14 +40,14 @@ describe('Counselor()', function() {
   describe('setSources()', function() {
 
     it('sets all sources', function() {
-      var c = new Counselor(FIXTURES);
+      var c = new Festoon(FIXTURES);
       c.setSources({x: 'foo.csv'});
       assert.ok(!c.sources.foo);
       assert.ok(c.sources.x);
     });
 
     it('throws an error on non-Objects', function() {
-      var c = new Counselor();
+      var c = new Festoon();
       assert.throws(function() { c.setSources('foo'); });
       assert.throws(function() { c.setSources(null); });
       assert.throws(function() { c.setSources(123); });
@@ -196,13 +196,13 @@ describe('Counselor()', function() {
 
   });
 
-  describe('Counselor.transform()', function() {
+  describe('Festoon.transform()', function() {
 
     beforeEach(createInstance);
     afterEach(removeInstance);
 
     it('transforms data', function(done) {
-      this.instance.setSource('length', Counselor.transform('foo', function(data) {
+      this.instance.setSource('length', Festoon.transform('foo', function(data) {
         return data.length;
       }));
 
@@ -215,13 +215,13 @@ describe('Counselor()', function() {
 
   });
 
-  describe('Counselor.transform.filter()', function() {
+  describe('Festoon.transform.filter()', function() {
 
     beforeEach(createInstance);
     afterEach(removeInstance);
 
     it('filters arrays', function(done) {
-      this.instance.setSource('filter', Counselor.transform.filter('foo', function(d) {
+      this.instance.setSource('filter', Festoon.transform.filter('foo', function(d) {
         return d.a == 1;
       }));
       this.instance.load('filter', function(error, data) {
@@ -233,7 +233,7 @@ describe('Counselor()', function() {
     });
 
     it('filters arrays by parameter value', function(done) {
-      this.instance.setSource('filter', Counselor.transform.filter('foo', function(d) {
+      this.instance.setSource('filter', Festoon.transform.filter('foo', function(d) {
         return d.a == this.a;
       }));
       this.instance.load('filter', {a: 1}, function(error, data) {
@@ -245,7 +245,7 @@ describe('Counselor()', function() {
     });
 
     it('recognizes objects uses `filter.call(params, data)`', function(done) {
-      this.instance.setSource('filter', Counselor.transform.filter('named', function(data) {
+      this.instance.setSource('filter', Festoon.transform.filter('named', function(data) {
         return data.foo;
       }));
       this.instance.load('filter', function(error, data) {
@@ -258,13 +258,13 @@ describe('Counselor()', function() {
 
   });
 
-  describe('Counselor.transform.findByParam()', function() {
+  describe('Festoon.transform.findByParam()', function() {
 
     beforeEach(createInstance);
     afterEach(removeInstance);
 
     it('does lookups by key', function(done) {
-      this.instance.setSource('lookup', Counselor.findByParam('foo', 'a'));
+      this.instance.setSource('lookup', Festoon.findByParam('foo', 'a'));
       var params = {a: 1};
       this.instance.load('lookup', params, function(error, data) {
         assert.ok(!error, 'error: ' + error);
@@ -274,7 +274,7 @@ describe('Counselor()', function() {
     });
 
     it('does lookups from one key to another', function(done) {
-      this.instance.setSource('lookup', Counselor.findByParam('foo', 'b', 'a'));
+      this.instance.setSource('lookup', Festoon.findByParam('foo', 'b', 'a'));
       var params = {b: 1};
       this.instance.load('lookup', params, function(error, data) {
         assert.ok(!error, 'error: ' + error);
@@ -341,7 +341,7 @@ describe('Express compatibilty', function() {
 });
 
 function createInstance() {
-  this.instance = new Counselor(FIXTURES);
+  this.instance = new Festoon(FIXTURES);
 }
 
 function removeInstance() {

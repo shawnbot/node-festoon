@@ -1,5 +1,5 @@
 {
-  "name": "counselor",
+  "name": "festoon",
   "version": "0.0.1",
   "description": "decorate your express requests with data",
   "main": "index.js",
