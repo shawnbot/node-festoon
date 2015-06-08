@@ -157,7 +157,7 @@ Festoon.prototype = {
 
   loadFile: function(filename, done) {
     var path = this.config.path;
-    if (path) filename = joinPath(path, filename);
+    if (path && !filename.match(/^[\.\/]/)) filename = joinPath(path, filename);
     var ext = filename.split('.').pop();
     if (ext in this.loaders) {
       return this.loaders[ext].call(this, filename, done);

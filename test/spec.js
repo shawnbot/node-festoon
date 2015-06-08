@@ -160,6 +160,17 @@ describe('Festoon()', function() {
       });
     });
 
+    it('respects . and / prefixes in filenames', function(done) {
+      this.instance.setSource('x', __dirname + '/fixtures/foo.csv');
+      this.instance.setSource('y', './test/fixtures/bar.csv');
+      this.instance.load('*', function(error, data) {
+        assert.ok(!error, 'error: ' + error);
+        assert.equal(typeof data.x, 'object');
+        assert.equal(typeof data.y, 'object');
+        done();
+      });
+    });
+
   });
 
   describe('decorate()', function() {
