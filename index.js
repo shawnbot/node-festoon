@@ -53,11 +53,11 @@ Counselor.prototype = {
   decorate: function(sources) {
     var self = this;
     return function loader(req, res, next) {
-      if (!res.data) res.data = {};
+      var locals = res.locals || (res.locals = {});
       var params = extend({}, req.params, req.query);
       self.load(sources, params, function(error, data) {
         if (error) return next(error);
-        extend(res.data, data);
+        extend(locals, data);
         return next();
       });
     };

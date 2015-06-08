@@ -146,7 +146,8 @@ describe('Counselor()', function() {
       this.counselor.setSources({x: 'foo.csv', y: 'bar.csv'});
       this.counselor.load('*', function(error, data) {
         assert.ok(!error, 'error: ' + error);
-        assert.deepEqual(Object.keys(data), ['x', 'y']);
+        assert.ok(data.x, 'no "x" data');
+        assert.ok(data.y, 'no "y" data');
         done();
       });
     });
@@ -177,8 +178,7 @@ describe('Counselor()', function() {
       var res = {};
       load(req, res, function(error) {
         assert.ok(!error, 'error: ' + error);
-        assert.equal(typeof res.data, 'object');
-        assert.equal(typeof res.data.foo, 'object');
+        assert.equal(typeof res.locals.foo, 'object');
         done();
       });
     });
