@@ -1,6 +1,6 @@
 {
   "name": "festoon",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "decorate your express requests with data",
   "main": "index.js",
   "scripts": {
